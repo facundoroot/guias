@@ -1,0 +1,389 @@
+GIT
+
+Lo primero que hacemos en la carpeta que queremos usar git es 
+----------------------------------------------------------------------------------------------
+git init
+
+de esta manera se inicia git y crea la carpeta escondida
+
+---------------------------------------------------------------------------------
+eliminar git
+
+cd carpeta/
+rm -rf .git
+---------------------------------------------------------------
+git status
+
+nos muestra todas las cosas que estan en nuestro proyecto que recibieron una modificacion desde 
+el ultimo commit y no se aniadieron todavia con add para el proximo commit, me aparecen en orjo
+lo que este en el escenario ya que fue aniadido con add va a estar en verde
+
+git status -s -b 
+
+aparte de los archivos en ele scenario y no me aparece el branch con el que estoy trabajando yo del proyecto
+
+------------------------------------------------------------
+git add .
+(git add Nombrearchivo.extension agregar un solo archivo al escenario)
+(git add *.png agrega todos los archivos png al escenario)
+(git reset *.png saca los archivos png del escenario)
+(git reset Nombrearchivo.extension saca ese archivo en especifico del escenario)
+
+ahora con add agarro todos los archivos modificados desde el ultimo commit que no estan commiteados y los agrego al escenario principal :) o sea los pongo en el lugar donde cuando haga commit esos archivos van a ser commiteados
+podemos tambien sacar algun archivo que querramos sacar del escenario y un monton de cosas
+
+----------------------------------------------------------------------------------
+git commit -m "Titulo del commit" -m "Subtitulo del commit"
+
+con el commit lo que hacemos es como sacar un screenshot, guardar esta version del proyecto que tenemos commiteada hasta ahora, nos queda esta version guardada, en el futuro cuando hagamos cambios podremos volver a cualquiera de las versiones commiteadas
+
+---------------------------------------------------------------------------
+git -- .
+
+vuelvo me restaura el ultimo commit con sus archivos y todo en nuestro repository
+
+-----------------------------------------------------------------------------------------
+git log
+
+me muestra todo el historial de commits desde el mas nuevo al mas viejo con el has unico de cada commit, el nombre de quien lo hizo, etc
+
+git log --oneline
+
+me muestra todo el historial de commits pero solo lo mas importante de ellos no toda la informacion, nombre, descripcion y hash
+
+-----------------------------------------------------------------------------------------
+
+git diff
+
+nos muestra todos los cambios entre el commit anterior y el archivo actual
+
+git diff --staged
+
+verifica todos los cambios de los archivos en el stage
+
+
+---------------------------------------------------------------------------------------
+git commit --m amend -m "Cambio el titulo del ultimo commit"
+
+----------------------------------------------------------------------------------
+git reset --(soft,mixed,hard) hashdeversion
+
+
+en términos simples y sin cosas técnicas (a como yo lo entiendo)
+
+Soft => 
+
+"elimina" los commits posteriores al commit al que estas haciendo el reset
+conserva los cambios en el stage area
+conserva los cambios que tengas en tus archivos (working directory)
+Mixed => 
+
+"elimina" los commits posteriores al commit al que estas haciendo el reset
+Deshace los cambios en el stage area
+conserva los cambios que tengas en tus archivos (working directory)
+Hard=> 
+
+"elimina" los commits posteriores al commit al que estas haciendo el reset
+Deshace los cambios en el stage area
+Deshace los cambios que tengas en tus archivos (working directory)
+
+------------------------------------------------------------------------------------------------------
+git reflog
+
+aunque borremos commits, stages etc si queremos cambiar a otras versiones, git lo puede hacer con ese comando
+
+luego miramos el hash de la version que queremos y podriamos hacer por ejemplo 
+
+git reset --hard hashdelaversion
+
+---------------------------------------------------------------------------------------
+Ramas
+la idea es que las ramas son una parte paralela del proyrcto que tambien tienen su propia linea del tiempo, luego de programar ahi podemos decidir si queremos que estos cambios se unan a la rama principal(hacer un merge) o no, si queremos unirlos hay 3 formas de hacerlo con merge fast-forward, merge union automatica o merge union con conflictos
+
+primero que nada para crear una rama podemos hacerlo con
+
+git branch nombrederama(siempre esta bueno comenzar con branch-)
+
+ahora para ver todas las ramas que hay haccemos
+
+git branch
+
+nos muestran todas las ramas, con la rama principal en color verde
+
+ahora si queremos cambiarnos de la rama main a otra de las ramas lo hacemos con 
+
+git checkout branch nombrederama
+
+ahora si hacemos 
+
+git log
+
+vamos a ver que estamos en verde en la rama secundaria y el head que es donde se hicieron los ultimos cambios los va a tener la rama secundaria
+
+otra de las cosas que esta buena saberlas es que podemos ver la diferencia entre la rama principal y una secundaria
+
+obviamente en la rama trabajamos con los commit de la misma manera que en la principal
+
+git diff nombreramasecundaria master(es el nombre que viene por defecto a la rama principal)
+
+ahora para unir las ramas tenemos que hacerlo desde la rama principal
+
+git checkout master
+
+ahora haccemos el merge
+
+git merge nombreramasecundaria
+
+una vez terminado de hacer el merge es una buena practica borrar la rama por si necesitamos una rama con el mismo nombre o para que no se haga mucho menjunge de ramas
+
+git branch -d nombreramasecundaria
+
+lo que vimos hasta aca se conoce como merge FAST FORWARD, el merge no presento ningun problema
+
+---------------
+
+una forma de crear una rama y moverse automaticamente a ella
+
+git checkout -b nombrederamasecundaria
+
+ahora supongamos que agarramos un archivo ya existente y agregamos cosas a el o hacemos modificaciones
+
+hacemos los commit y si en este caso hacemos el log y nos muestra un graficiquito que muestra que la rama principal y la secundaria
+estan teniendo modificaciones en el mismo archivo
+
+ahora cuando hagamos el merge git no va a tener problema en hacerlo automaticamente por nosotros y cuando veamos el log vamos a ver un grafiquito mostrando lo que paso
+
+este es el merge AUTOMATICO
+
+-------------------------------
+UNIONES CON CONFLICTO
+ esto puede pasar cuando dos ramas estan trabajando con los mismos archivos y quieren hacer commit con 2 cosas diferentes del mismo archivo
+ver despues como resolver esto o preguntar en eprsona
+
+-----------------------------------------------------------------------
+ETIQUETAS
+
+los tags se usan apra marcar versiones importantes o de realices del programa version 1.0.0 o version incial o como quiera
+android por ejemplo usa nombres de caramelos para sus releases
+hace una referencia al commit y todo la aplicacion que dio un paso muy importante
+
+para crear un tag hago 
+
+git tag nombredetag
+
+para borrarlo
+
+git tag -d nombredeltag
+
+otra forma de crear tags mas completos
+
+git tag -a v1.0.0 -m "Version 1.0.0"
+
+ahora ya queda arraigado al ultimo commit que hicimos
+
+ahora si queremos hacer un tag a un commit mas viejo por ejemplo una version 0.1
+
+git tag -a v0.0.1 elhashdelcommit -m "mensaje del tag"
+
+ahora si hacemos 
+
+git tag
+
+vemos todos los tags o sea las versiones mas importantes de nuestro programa
+
+ahora de esta manera solo se ven los titulos de los tags, si quiero entrar y ver los mensajes que arme en el tag puedo entrar al tag ene specifico y ahi me muestra
+
+git show nombredetag
+
+y ahi me meustra toda la info
+
+---------------------------------------------------------
+STASH
+
+el stash es un contenedor que podemos poner todos cambios temporales para dejarlo como se enontraba en el ultimo commit
+
+supongamos que estamos trabajando en un proyrcto pero nuestro jefe nos dice que quiere scar y ala pagina asi que hay queencotnrar alguna manera de guardar el work in progress, para eso usamos stash
+
+git stash
+
+nos guarda el WIP(work in progrtess)
+
+si hago un lock me aparece el WIP por separado
+puedo guardar varios WIP
+y despues verlos
+
+git stash list
+
+ahora podemos trbajar como siempre con el git en general
+
+luego cuando queremos volver al WIP
+
+git stash pop
+
+esto lo que hace es tomar el ultimo ingreso del stash que tuvimos y luego lo borra, de esta manera recuperamoslo cambios del stash que estabamos haciendo y ya opuedo seguir trabajando con el como si fuera un commit comun o sino guardarlo denuevo como stash
+
+--------------------------------------------------------------------------------------
+REBASE
+
+supongamos que estamos trabajando con nuestra rama secundaria pero ahora necesitamos una cosa nueva de la rama principal para poder seguir trabajando con cosas nuevas para la rama secundari, para eso sirve el rebase para actualizar cosas de la rama principal a la secundaria
+
+hay 2 formas de hacerlo, una con git rebase master en la cual agarra nuestra rama secundaria y la corre temporalmente hasta el rpesente por lo que todos los commits hasta el ultimo de la rama principal van a estar en la rama secundaria
+
+y otra manera es con rebase interactivo
+
+git rebase -i HEAD(o cualquier rama)firulete3(o la cantidad de commits que querramos de la rama principal antes del ultimo commit)
+
+
+--------------------------------------------------------------------------------------------------------
+GITHUB
+
+push: guardo mi proyecto en un repositorio en mi cuenta online de githuib
+
+pull: traigo el repositorio yo o mis comàñeros para seguir trabajando en el
+
+
+primero que nada, si ya hay un repositorio en github vacio que creamos y queremos agregar contenido, primero tenemos que ocnectarlo 
+
+git remote add origin urlproporcionadoporgit
+
+podemos tener varios remotes, origin es el nombre de nuestro remote, al segundo le podemos poner otro nombre 
+
+git push -u(me pone predeterminada la rama que eliga) origin(nombre de repositorio) master(rama que quiero modificar)
+
+los tags hay que subirlo por searado
+
+git push --tags
+
+ahora para cuando se hacen modificacioes en el repositorio de github y quiero descargar el repositorio nuevo uso el pull
+
+git pull origin master
+
+otra de las cosas importantes es el clone
+
+para hacer una copia de cero del repostorio que esta en github por ejemplo un compañero nuevo o alguien que quiere haer cambios a tu codigo pero no tiene nada del repositorio puede usar el clone para descargarlo
+
+dentro del lugar donde quiere que se decargue puede usar 
+
+git clone urldelrepositorio nombrecarpetaquevaatenerelrepostorio
+
+tambien podemos usar el fectch en vez del pull cuando queremos atualizar el repositorio pero sin hacer el merge automaticamente ya que no sabemos cuales fueron los cambios o si fueron buenos o malos
+
+en general antes de hacer un push esta bueno hacer un merge con las modificaciones que hallan
+
+
+----------------------------------------------------------------------------------------------
+PULL REQUEST
+
+Cuando hay un repositorio publico pero no somos colaboradores podemos clonar, y trabajar en nuestra maquina como si fueramos los creadores, hacer commits etpero no push
+
+otra de las cosas que podemos hacer es un fork, que lo que hace es clonar tambien el repositorio localmente pero aparte crea  el repositorio en github y ahi si podemos hacer en ese repositorio push, commits, clone etc
+
+ahora si queremos mostrarles a las personas del repositorio original los cambios podemos usar el fork tambine, a idea es que el form es una clonacion del repositorio que nos crea un repositorio propio pero aemas seria como una rama de la princioal
+para eso podemos hacer el pull request para que podamoshacernuestra contribucion y los usuarios del repositorio original miran y deciden si aceptan el pull request
+
+cuando queremos hacer un fork, vamos al repositorio publico que queremos en github y apretamos e el icono de fork
+de esta manera se crea la copia
+si miramos en nuestra pagina principal nos aparece el repositorio con el icono de fork alado ahora voy a mi maquina y en el lugar donde quiero poner este repositorio localmente para trabajar hago
+
+git clone httpsdelrepo nombredecarpetadondeseclonaelrepo
+
+ahora puedo trabajar y hacer los commits
+
+hago el git push 
+
+voy a mi github y veo el repositorio este que modifique del fork y ahora vamos a hacer el pull request
+
+primero vemos con git -v que este todo bien la info
+
+vamos a nuestro fork en github que ya tiene nuestras modificaciones echas y apretamos en el boton new pull request
+
+nos va a mostrar todo los cambios que se van a hacer a la rama master
+
+cuando estemos seguro que estan todos los cambios en el fork que quremos apretamos en el boton de create pull request
+
+ponemos titulo y comentarios y aretamos en create pull request y ahi se hizo nuestro pull request
+
+ahora la persona a cargo lo va mirar a ver si esta bien el codigo que commiteaste o no
+
+la persona va a ver todos los cambios que hicist y ser capaz de comentarte linea por linea alguna anotacion o cambio que quiera que haga
+
+ahora nos va a llegar la notificacion para los cambios que quiere que hagamos al codigo y los comentarios y nos va aaparecer una cruz si no acepto el pull requet y quiere cambios
+
+ahora nosotros los qu tenemos el branch para ver que onda nuestro pull request si lo acepto o novamos a nuestro fork y apretamos en pull request a la derecha de la pantalla
+
+ahora nos lleva a los request que hicimos, apretamos en view pull request y ahi muestra nuestro pull request, si lo acepto o no y los comentarios y cambios que quiere, podemos replicar a los comentarios que hizo y luego hay que hacer las modificaciones
+
+hacemos los cambios de los archivos, hacemos el commit y automaticamente le va a llegar los cambios que hicmos a nuestro jefe en el mismo thread del pull request original
+el lo va a poder mirar y si le parece aprobarlo o sino seguir haciend comentarios
+
+--
+
+ahora supongamos que nosotros estamos trbajando con un fork y en el repositorio original hacen un cambio, como hacemos para que nuestro fork se actualize
+no hay manera de saber si se hizo cambio en la rama principal o no
+
+como hago para darme cuenta si hay cambios en el repositorio original
+
+dentro de nuestro fetch en nuestra terminal hacemos
+
+git remote -v 
+
+vemos que tenemos nuestro pull y fetch original el de origin de siempre
+
+ahora hacemos
+
+git remote add upstream httpsdelrepooriginal
+
+veamos denuevo git remote -v y vemos ue aparte de nuestro fetch y pull de origin tenemos ahora otro fetch y otro push mas del upstream
+
+git pull upstream master
+
+ahora nos aparece un mensaje de commit dl merge, hacemos el mensaje y luego apretamos
+
+esc :wq
+
+ahora ya se hicieron los cambios, hacemos
+
+git push
+
+y ya se actualiza nuestro repositorio en github tambien
+
+------------------------------------
+FLUJOS DE TRABAJO
+
+una de las maneras de trabajar en una emporesa es del branch master que cada programador tenga su propia feature branch y trabaje ahi, luego estas serab incluidas en el master
+la persona a cargo va a ir pasando de rama en rama usando git fech y ckeout y haciendo los merge
+
+otra de las maneras es que cada rama haga pull requests
+
+trabajo con el archivo que engo que trabajar
+ahora creo una rama 
+
+git checkout -b nombrederama
+
+git add .
+
+git commit -m""
+
+ahora subo la rama a github 
+
+git push origin nombrederama
+
+hago click en pull request
+
+selecciono la base y la rama
+
+selecicono create pull request
+
+hago comentarios y apreto en create pull request
+
+si esta todo bien cuando revisan hago el nerge y cierro la rama
+
+ahora la borro en el git
+
+git branch -d nombrederama
+
+ahora hago gitpull y agarro too los cambios que se hallan actalizado en el repositorio
+
+
+
+

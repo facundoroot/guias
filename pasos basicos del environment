@@ -1,0 +1,163 @@
+Entro con el cmd al lugar donde quiero crear mi nueva app de django y utilizo
+
+django-admin startproject nombre
+
+luego chequeart todos los imports e includes que se tienen que hacer
+
+python manage.py runserver 
+
+para correr el server
+
+--------------------------------------------------------------------------------------------------------
+para arrancar a armar apps dentro de nuestro proyecto (cada app tiene un modelo adentro)
+
+usamos dentro de la carpeta de nuestro proyecto 
+
+python manage.py startapp nombre 
+
+recordar registrar cada app que creamos en setting del proyeto general installed apps, desde ahi es donde se aclara cada app nueva 
+luego cuando se hagan las migraciones se crean las tablas de los modelos de las apps que se encuentren registrados 
+
+
+
+
+--------------------------------------------------------------------------------------------
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'restaurant_1',
+        'USER': 'postgres',
+        'PASSWORD': 'admin',
+        'HOST': 'localhost',
+        'PORT': '5432'
+    }
+}
+
+luego de haber creado la base de datos en pgadmin o sea postgresql 
+instalo el psycopg2 que va a ser el que haga las conexiones
+dentro de nuestra carpeta en la terminal
+
+python -m pip install psycopg2
+
+para hacer la primera migracion usamos 
+
+python manage.py migrate 
+
+luego de que hayamos echo modificaciones a las tablas o hallamos creado nuevas clases de modelo y hallamos agregado la app 
+en settigns para que cuando se haga una nueva migracion se hagan esa modificaciones usamos este comando para esta migracion 
+
+python manage.py makemigrations 
+
+de esta manera se crea la migracion y luego si denuevo hago migrate para que se guarde
+
+python manage.py migrate
+
+-------------------------------------------------------------
+SUPER USER 
+
+en la terminal dentro de nuestra carpeta del proyecto 
+
+python manage.py createsuperuser
+
+y ahi voy a http://127.0.0.1:8000/admin
+
+
+ahora ya podemos entrar al administrador visual
+recordar que en el solo van a aparecer los mdoelos que hallamos registrado dentro de admin.py dentro de la carpeta de la app 
+ya que hay veces que solo queremos que ciertos modelos aparezccan para modificar y crear,etc 
+asi que cuando entramos al administrador visual luego de logearnos con el super user, si no vemos el modelo que queremos en pantalla lo registramos 
+
+------------------------------------------------------------------------------------------------------------------------------
+TEMPLATES
+
+acordarse de crear las carpeta templates y dentro de esa otra carpeta con el ttema del template y dentro ell index 
+recordar tambien en las views cargar el loader para pdoer cargar templates
+
+o sino con la forma de render directamente en vez de loader hay que tener cuidado que tmabien tenemos que imortar render 
+generalmente ya lo trae importado
+
+
+
+------------------------------------------------------------------------------------------
+Autentificacion
+para la autentificacion django no solo ya trae la logica echa sino que los forms echos tambien asi que solo los usamos 
+en la view acordarse de importar User
+
+LOGIN
+el login trae el view django asi que mirar como se hace eso 
+tmbien cuando termina el login hay que redireccionar al index por que automaticamente redirecciona a el profile de la persona que se logeo y si no creamos esa pagina todavia
+nos va a dar error asi que cambiamos esos en setting.py abajo de todo 
+
+Lo mismo para las restricciones, cuando queremos que si no cumple la reestriccion sea redirigido a algun lugar en especifico la redireccion la hacemos en setting.py de la app principal
+
+IMAGEN
+    # image field no lo trae por defecto django asi que hayq ue instalarlo con pip
+    # pip install pillow
+
+PARA CAMBIAR EL PATH donde se guardan las imagenes del profile tambien en settings.py
+
+------------------------------------------------------------------------------------------------------------------------------------------
+Enviroment
+Creo un virtual enviroment
+en la terminal dentro de la carpeta que uqiero crear el enviroment hago
+
+virtualenv nombre
+
+luego entro dentro del env que cree con la terminal, en este caso nombre y lo activo
+ 
+source bin/activate
+
+ahora vuelvo a la carpeta anterior
+
+cd..
+
+y ahi instalo django
+
+pip install django
+
+ahora que instale django, creo el proyecto
+
+django-admin startproject nombre
+
+ahora entro al proyecto que cree recien y ya puedo hacer la instalacion de la primer app
+
+cd nombre
+
+django-admin startapp nombreapp
+
+Si voy a usar postgre tengo que instalar el psycopg2 que es el enviroment ya que hay que hacer todo de cero
+
+para eso entro a la carpeta del proyecto y ahi hago 
+en nuestro caso ese lugar seria
+Desktop/python/beggining/Django projects/e-commerce/ecomsite$ 
+o sea dentro de la carpeta general y luego dentro del proyecto instalado con django, ahi instalo psycopg2
+
+pip-install psycopg2
+
+si no funciona
+
+pip install psycopg2-binary
+
+
+Recordar si lo voy a usar instalar boostrap a travez del cdn en el head de nuestro template base
+
+
+-----------------------------------------------------------------------------------------
+con flask primero creo el enviroment
+despues dentro del proyecto sudo apt install python3-flask
+luego para instalar conecciones a la base de datos sudo apt-get install -y python-sqlalchemy
+para correr el server python3 app.py
+una vez que hicimos la base de datos en app.py
+tambien tenemos que instalar psycopg2
+luego estando en la carpeta del proyrcto y con los modelos creados y la db tambien
+para conectar y migrar hacemos
+python le damos enter asi entramos en el env de python
+from app import db
+db.create_all()
+
+y listo ya deberia haber migrado
+
+----------------------------------------------------------------------------------------
+Docker
+
+sudo docker-compose up
