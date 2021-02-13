@@ -1,2 +1,46 @@
 DOCKER
 
+para instalarlo en la pc vamos a docker y usamos las 2 lineas de omando del modo de instaacion convenience script
+
+ahora chequeamos la version
+
+sudo docker version
+
+ahora veamos algunos commands
+
+docker run nombredeimagen
+
+corre el container de una imagen, si no esta la imagen en el host va a docker y lo baja, las proxias veces se reutiliza la imagen
+
+docker ps
+
+lista todos lo containers que se estan corriendo y alguna info, el id del container, la imagen de la que se creo el container, cuando se creo el container,nombre de container,etc
+
+docker ps -a
+
+muestra la lista de los containers que estan orriendo y de los que se dejaron de correr
+
+docker stop nombredecontainer
+
+deja de correr el container
+
+docker rom nombredecontainer
+
+borra permanentemente el container
+
+docker images
+
+nos muestra las imagenes disponibles en nuestro host
+
+docker rmi nombredeimagen
+
+borra permanentemente la imagen
+
+docker pull nombredelaimagen
+
+de estamanera descargamos la imagen y se guarda en el host pero no se utiliza automaticamente
+
+--------------------------
+
+j
+ 
