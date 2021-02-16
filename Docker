@@ -236,10 +236,102 @@ worker:
         -redis 
         -db
 
+e este caso hay algunas imagenes que ya estan echas y se encuentran en docker hub 
+pero hay otras que son las nuestras propias, no hace falta que esten echas, vamos a indicar que las construya, dandole como info la carpeta con nuestro codigo y el dockerfile 
+con las instrucciones para crearla por ejemplo
+
+
+redis:
+    image:redis
+db:
+    image:postgres:9.4
+vote:
+    build: ./vote
+    ports:
+        - 5000:80
+    links:
+        - redis 
+result:
+    build: ./result
+    ports:
+        -5001:80
+    links:
+        -db 
+worker:
+    build: ./worker
+    links:
+        -redis 
+        -db
+
+hay diferentes versiones del compose, en la version 2 todo esta info se pone dentro de services 
+hay que aclarar que version de compose uno quiere usar 
+no solo eso sino que la version 2 contruye automaticamente el network haciendo que se puedan comunicar los servicios entre ellos por sus nombres sin la necesidad de usar link 
+Tambien podemos usar el depend on para decir que servicio se tiene que crear primerp para que ese que depende se puda crear correctamente 
+
+
+version:2
+services:
+    redis:
+        image:redis
+    db:
+        image:postgres:9.4
+    vote:
+        build: ./vote
+        ports:
+            - 5000:80
+        depends_on:
+            - redis
+
+    result:
+        build: ./result
+        ports:
+            -5001:80
+
+    worker:
+        build: ./worker
+
+
+Por ultimo tenemos la version 3 que veremos mas adelante 
+
+Otra de las cosas que podemos hacer es separar trafico, nos gustaria separar el trafico
+del backend del trafico de los usuarios en el front end 
+creamos los networks abajo de todo y en los services aclaramos en que network van a estar conectados
 
 
 
+version:2
+services:
+    redis:
+        image:redis
+        networks:
+        - back-end
+    db:
+        image:postgres:9.4
+        networks:
+            -back-end
+    vote:
+        build: ./vote
+        ports:
+            - 5000:80
+        depends_on:
+            - redis
+        networks:
+            - fron-end 
+            - back-end
+
+    result:
+        build: ./result
+        ports:
+            -5001:80
+        networks:
+            - front-end 
+            - back-end
+    worker:
+        build: ./worker
+        networks:
+            - back-end
 
 
-
-
+networks:
+    fornt-end:
+    back-end:
