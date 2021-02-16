@@ -24,7 +24,7 @@ docker stop nombredecontainer
 
 deja de correr el container
 
-docker rom nombredecontainer
+docker rm nombredecontainer
 
 borra permanentemente el container
 
@@ -40,7 +40,206 @@ docker pull nombredelaimagen
 
 de estamanera descargamos la imagen y se guarda en el host pero no se utiliza automaticamente
 
---------------------------
+hay que tener en cuenta que los containers solo se corren mientras tenga aplicaciones que necesitan que los corran adetro
+luego hacen exit
+por ejemplo si corremos un container de ubuntu luego de unos momentos exit porque solo se usa ubuntu como base para las proximas aplicaciones
 
-j
- 
+
+--------------------------
+supongamos que tengo un container mysql y le agrego datos
+cuando borre el container esos datos se perden, asi que puedo mapear para que los datos e guarden en un archivo externo
+lo saco la data de docker host a un directory local
+donde se guarda la data en el container supongamos que es 
+/var/lib/mysql 
+y la carpeta que cree local yo para guardar los datos esta en 
+/opt/datadir 
+
+entonces para correr el container y mapear ese directorio del host a el directorio local 
+
+docker un -v /opt/datadir:/var/lib/mysql mysql
+
+----------------------------------------------------------------------
+IMAGE 
+
+supongamos que tenemosuna aplicacion de flask y queremos crear la imagen aya que en docker hub no esta 
+una de las cosas que tenemos que hacer es el Dockerfile 
+dentro de el ran los comandos que queremos que se ejecuten al correr el container 
+por ejemplo 
+
+FROM Ubuntu 
+(empieza desde un OS base)
+
+RUN apt-get update
+RUN apt-get install python 
+
+Run pip install flask 
+RUN pip install flask-mysql 
+
+COPY . /opt/source-code 
+(agarra el source code que tenemos en nuestro sistema y lo copia en la imagen que estamos creando)
+
+ENTRYPOINT FLASK_APP=/opt/source-code/app.py flask run 
+(especifica el ejecutable que usara el contenedor, especifica el comando que se corre cuando la imagen se corre como contenedor, en este caso corro el server)
+
+Ahora creo la imagen desde el Dockerfile y le da un nombre(tag)
+
+docker build Dockerfile -t mmushad/my-costum-app
+
+ahora si la quiero subir a dockhub 
+
+docker push mmushad/my-costum-app
+
+
+cada linea de comandos del Dockerfile guarda la informacion del comando (layer) anterior que se corrio 
+
+si alguno de nuestro layers falla o agregamos alguno nuevo 
+una vez que corrijamos los layers y creemos la imagen, docker cachea los layers por lo que va a continuar desd el layer que fallo
+asi crear imagenes se vuelve mucho mas rapido, no ay que esperar que docker vuelva a crear toda la imagen entera hasta donde estaba el fallo 
+
+no solo se puede meter e elk container codigo, bases de datos, etc sino que culquier cosa que se te ocurra como google chrome,spotify,etc 
+
+--------------------------------
+CMD vs ENTRYPOINT 
+
+vemos una cosa interesante, cuando nosotros corremos por ejemplo el container de ubuntu, podemos ver con docker ps que no aparece activo,
+luego si corremos docker -a ps nos aparece como fue exit apenas lo corrimos 
+eo es por que los container no se comportan como virtual machines, los container tienen que cumplir una funcion especifica como hostear un servr, una database, correr una app, etc 
+una vez que esta completa el task, el container exitea.
+si miramos el dockerfile de las imagenes mas populares podemos ver que al final del archivo hay un CMD y lo que hace es correr un comando una vez que se halla instansiado el contenedor 
+en la imagen de ubuntu el CMD corre CMD["bash"]
+bash es shell que toma los coados de una terminal, docker no agrega una terminal automaticamente al container por lo que cuando se corrio el container de ubuntu, intento correr un BASH, como no encuentra ninguna terminal attached al contenedor 
+por lo que se exitea 
+entonces como hacemos para cambiar ese CMD, lo que podemos hacer es crear nuestro propia imagen de la imagen base de ubuntu y luego especificar el CMD que queremos 
+por ejemplo en formato json CMD["sleep","5"] o en forma comun CMD sleep 5
+
+ahora creo mi nueva imagen y la creo
+
+docker build -t ubuntu-sleep
+docker run ubuntu-sleep 
+
+tambien podriamos cambiar directo del comando la cantidad que tiempo que queremos que slepee
+asi no cambiamos el codigo puro
+
+docker run ubuntu-sleep sleep 10
+
+esto sirve pero ya el nombre del container especifica que va a haer sleep, por lo que queda desproligo tener que especificar denuevo sleep para cambiarle la cantidad de tiempo 
+para eso podemos usar ENTRYPOINT, lo que hace es decir qur programa se va a correr cuando comienze el container y luego desde comando especificamos la cantidad 
+
+FROM Ubuntu 
+
+ENTRYPOINT["sleep"]
+
+y ahora usamos el comando 
+
+docker run ubuntu-sleep 10
+
+ahora podriamos tambien dejar una cantidad de tiempo default por i no la especificamos para que no nos tire error, ahi podemos combinar ENTRYPOINT con CMD
+
+FROM Ubuntu 
+ENTRYPOINT["sleep"]
+CMD["5"]
+
+------------------------------------------------------------------
+NEWTWORKING
+
+cuando instalamos docker crea 3 networks automaticamente, bridge, none y host 
+
+para conectarnos con cada network usamos 
+docker run ubuntu 
+docker run Ubuntu --network-none 
+docker run Ubuntu --network-host 
+
+Bridge: usa un internal network privado creado en el host
+todos los container estan atacched a este netpowr por default y cada uno tiene un ip intero
+en general usando 172.17...
+los container pueden accederse entre ellos usando este ip interno 
+para acceder a estos containers desde el exterior hay que mapear los puertos internos a puertos del docker host
+
+Network: otra forma de acceder a estos containers desde el exterior es asociando los container con el network del host 
+
+None: on este los contenedores no estan conectados a ningun network ni al exetrior ni se conectan entre ellos 
+
+sepueden crear varios networks adentro apra que se conecten ade a par las apps por ejemplo 
+
+docker inspect nombredecontainer
+
+ahi podemos ver el ip, ntewok etc del container
+
+para conectarse entre los contenedores podemos usar sus nombres 
+
+mysql.connect(mysq)
+
+---------------------------------------------------
+COMPOSE
+
+veamos un poco sobre docker-compose.yml 
+la idea general es que cuando tenemos muchos servicios y se vuelve mas complejo, podemos usar 
+docker-compose.yml para poner todos los servicios y las configuraciones en especifico para cada uno sobre esta aplicacion
+luego usamos 
+
+docker-compose up 
+
+y con esto corremos el stack de la aplicacion entera, esto es mas facil y practico de hacer ya que todos los cambios se guardan en 
+docker-compose.yml 
+
+ahora veamos lo facil que es usar un stack con diferentes servicios y lenguajes,etc 
+supongamos que tenemos todos estos servicios de la misma app 
+
+ voting-app                    result-app 
+    |                           |
+ in-memory                     db 
+    |                           |
+    |                           |
+    --------------worker---------
+
+
+
+supongamos que ya tenemos creadas las imagenes de cada uno de los servicios 
+
+coemnzamos 
+
+docker run -d --name=redis redis 
+(corre redis de forma detached(se corre en el background por lo que si levanta un nservidor nos deja seguir escribiendo comandos ahi y no hace falta abrir otra terminal, despues la atacho denuevo y listo) y le da el nombre redis al container)
+
+docker run -d --name=db postgres:9.4 --link db:db result-app
+
+docker run -d --name=vote -p 5000:80 --link redis:redis voting-app 
+
+docker run -d --name=result -p 5001:80
+
+docker run -d --name=worker --link db:db --link redis:redis worker 
+
+por ahora corrimos todos los containers conectados entre ellos con la opcion link no los conectamos entre ellos todavia 
+
+
+ahora hagamoslo en el archivo docker-compose.yml:
+
+redis:
+    image:redis
+db:
+    image:postgres:9.4
+vote:
+    image:voting-app 
+    ports:
+        - 5000:80
+    links:
+        - redis 
+result:
+    image: result-app 
+    ports:
+        -5001:80
+    links:
+        -db 
+worker:
+    image: worker
+    links:
+        -redis 
+        -db
+
+
+
+
+
+
+
+
