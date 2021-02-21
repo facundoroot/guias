@@ -161,3 +161,8 @@ y listo ya deberia haber migrado
 Docker
 
 sudo docker-compose up
+
+-------------------------------------------
+conda activate mag en magnify
+contraseña de usuario postgres es admin
+
