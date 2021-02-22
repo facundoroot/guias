@@ -336,5 +336,86 @@ networks:
     fornt-end:
     back-end:
 
---------------------------------
-ENGINE
+-------------------------------------------------------------------------------------------------------------------
+PORTS 
+veamos una idea basica de como funciona los puertos, supongamos que descargamos nginx que es un servidor parecido a apache 
+
+docker pull nginx 
+
+ahora lo corremos 
+
+docker run gninx 
+
+ahora vamos a ver en la consola que la terminal no termina de ejecutsarse, no podemos escribir comandos 
+eso es por que el servidor se mantiene corriendo hasta que salgamos con crtl+c 
+ ahora si miramos info de lo que esta corriendo 
+
+ docker ps 
+
+ vemos que en port de nginx dice 80, este es el puerto interno del contenedor en el que corre nginx entonces para poder usarlo desde nuestro pc tenemos que asignarle un puerto 
+
+ podemos hacerlo de eta manera 
+
+docker run -p 3000:80 nginx 
+
+ahora al puerto interno 80 le attacheamos algun puerto de nuestra pc como el 3000 
+
+ahora si voy a localhost.3000 veo que ya esta corriendo nuestro servidor y nos aparece la bienvenida de nginx 
+
+ahora voy a correr nginx en el puerto de la computadora 80 y aparte voy a hacwer un detach asi cuando corro el servidor puedo seguir escribiendo en la misma terminal y no teno que abrir otra 
+
+docker run -p 80:80 -d nginx 
+
+ahora para parar todos los contenedores(muy parecido para eliminar) al mismo tiempo puedo hacer 
+
+docker stop $(docker ps -aq)
+
+donde-aq nos devuelve los id de todos los contenedores que tengamos
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+VOLUMES
+los volumes sn la forma que vamos a teer de conectar neustros archivos a contenedores 
+por ejemplo imaginemos que en /home/fazt/Desktop/website tengo todos los archivos de mi pagina web 
+ahora quiero correr mi servidor de nginx pero con el contenido de mi carpeta, esto lo vamos a hacer con volumes 
+volumes le dice de que carpeta estan los archivos y a que carpeta del contenedor se copian para poder corerlos bien, cada imagen en docker hub nos especifica el path donde enviar los volumes 
+en este caso el path a donde enviar es /usr/share/nginx/html 
+
+entonces escribo el comando 
+
+docker run -d -p 80:80 --name website -v /home/fazt/Desktop/website:/usr/share/nginx/html:ro nginx 
+
+el :ro es para que sea solo lectura y listo, ya tenemos nuestros archivos conectados al ontenedor que tiene el server (o sea no me deja crear archivos desde el contenedor)
+
+tambien podemos usar path relativos, por ejemplo si la terminal la corremos desde la carpeta onde estan nuestros archivos web puedo hacer 
+
+docker run -d -p 80:80 --name website -v $(pwd):/usr/share/nginx/html:ro nginx 
+
+ahora podemos correrlo sin el :ro asi podemos crear archivos desde el contenedor tambien 
+
+docker run -d -p 80:80 --name website -v $(pwd):/usr/share/nginx/html nginx 
+
+ahora que estamos corriendo el contenedor podemos entrar dentro de el y ver que archivos tengo dentro 
+
+docker exec -it website bash 
+
+cd /usr/share/nginx/html nginx 
+
+ls 
+
+ahi me muestran los archivos dentro de mi carpeta, supongamos que quiero agregar un archivo services.html 
+
+touch services.html 
+
+ahora se creo el archivo 
+
+si hago ls 
+
+me aparece el archivo nuevo tambien 
+
+
+
+
+
+
+
+
+ 
